@@ -1,0 +1,123 @@
+\documentclass[11pt]{article}
+\title{\LARGE \bf Heuristic functions analisys}
+\usepackage{listings} 
+\author{Stanislav Levental}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+
+This document includes comparison of different heuristics I've tried and their performance characteristics.
+
+\end{abstract}
+
+\section{Heuristics}
+
+\subsection{Problem 1}
+
+To exchange cargo between to airports we just need to load it, fly and unload in the other airport, optimal plan will look like:
+\begin{lstlisting}[frame=single]
+Load(C2, P2, JFK)
+Load(C1, P1, SFO)
+Fly(P2, JFK, SFO)
+Unload(C2, P2, SFO)
+Fly(P1, SFO, JFK)
+Unload(C1, P1, JFK)
+\end{lstlisting}
+
+This plan has optimal length of 6 and all approaches except depth-first search were successful in finding this solution. Breadth-first search was the fastest among others - and this is expected because state space is very limited, so simple algorithms may perform better, even if asymptotically they are worse.
+
+\begin{center}
+ \begin{tabular}{||c c c c c ||} 
+ \hline
+ Algorithm & Expansions & Goal Tests & Plan (act) & Time (seconds) \\ [0.5ex] 
+ \hline\hline
+ \textbf{breadth-first search} & 43 & 56  & \textbf{6} & \textbf{0.142} \\ 
+ \hline
+ \textbf{depth-first search} & 12 & \textbf{13}  & 12 & 0.038 \\ 
+ \hline
+ \textbf{uniform-cost search} & 55 & 57  & \textbf{6} & 0.174 \\ 
+ \hline
+	\textbf{$A^{*}$ (level-sum)} & \textbf{11} & \textbf{13} & \textbf{6} & 6.3 \\ 
+ \hline
+	\textbf{$A^{*}$ (no preconditions)} & 41	 & 43 & \textbf{6} & 0.15 \\ 
+ \hline
+\end{tabular}
+\end{center}
+
+\subsection{Problem 2}
+
+\textit{Problem 2} has bigger search space and it's optimal execution plan is larger, means that we needed to look further in a search space.
+\begin{lstlisting}[frame=single]
+Load(C1, P1, SFO)
+Fly(P1, SFO, JFK)
+Unload(C1, P1, JFK)
+Load(C3, P3, ATL)
+Fly(P3, ATL, SFO)
+Unload(C3, P3, SFO)
+Load(C2, P2, JFK)
+Fly(P2, JFK, SFO)
+Unload(C2, P2, SFO)
+\end{lstlisting}
+
+Optimal plan for \textit{Problem 2} was found by all algorithms except depth-first search, this algorithm doesn't guarantee finding an optimal solution - that's what we can observe in test results as well. Solutions which are using heuristic functions are more optimal in terms of node expanding (if we won't take depth-first search into account) and in term of time execution. However building a planning graph takes more time than I would expect and even with the most optimal solution in terms of node visiting - heuristic calculation of level-sum is very costly. 
+
+\begin{center}
+ \begin{tabular}{||c c c c c ||} 
+ \hline
+ Algorithm & Expansions & Goal Tests & Plan (act) & Time (seconds) \\ [0.5ex] 
+ \hline\hline
+ \textbf{breadth-first search} & 3343 & 4609  & \textbf{9} & 45.8 \\ 
+ \hline
+ \textbf{depth-first search} & 582 & 583  & 575 & 8.6 \\ 
+ \hline
+ \textbf{uniform-cost search} & 4853 & 4855  & \textbf{9} & 93.4 \\ 
+ \hline
+	\textbf{$A^{*}$ (level-sum)} & \textbf{86}	 & \textbf{88} & \textbf{9} & 741 \\ 
+ \hline
+	\textbf{$A^{*}$ (no preconditions)} & 1506 & 1508 & \textbf{9} & \textbf{30.2}
+	 \\ 
+ \hline
+\end{tabular}
+\end{center}
+
+\subsection{Problem 3}
+
+\textit{Problem 3} is the biggest among three problems researched, since search space growths exponentially even a small increase in a state impacts search space dramatically. Optimal solution will look like this: 
+\begin{lstlisting}[frame=single]
+Load(C2, P2, JFK)
+Load(C1, P1, SFO)
+Fly(P2, JFK, ORD)
+Load(C4, P2, ORD)
+Fly(P1, SFO, ATL)
+Load(C3, P1, ATL)
+Fly(P1, ATL, JFK)
+Unload(C1, P1, JFK)
+Unload(C3, P1, JFK)
+Fly(P2, ORD, SFO)
+Unload(C2, P2, SFO)
+Unload(C4, P2, SFO)
+\end{lstlisting}
+
+After the last experiment we can be sure that we are observing degradation in performance of simple solutions which are not using heuristics and less degradation in more optimal solutions - which are faster and more efficient in terms of node visit number. Level-sum heuristic took too much time for the last problem because it uses Planning Graph and builds it every time we need to evaluate the action, this behavior could be optimized using memoization - storing pre-calculated heuristic value for each state or building Planning Graph on-the-fly, until we found the goal. I believe that this may make this heuristic work faster.
+
+\begin{center}
+ \begin{tabular}{||c c c c c ||} 
+ \hline
+ Algorithm & Expansions & Goal Tests & Plan (act) & Time (seconds) \\ [0.5ex] 
+ \hline\hline
+ \textbf{breadth-first search} & 14663 & 18098  & \textbf{12} & 296 \\ 
+ \hline
+ \textbf{depth-first search} & 627 & 628 & 596 & 11.04 \\ 
+ \hline
+ \textbf{uniform-cost search} & 18223 & 18225 & \textbf{12} & 649 \\ 
+ \hline
+	\textbf{$A^{*}$ (no preconditions)} & 5118 & 5120 & \textbf{12} & \textbf{172}
+	 \\ 
+ \hline
+\end{tabular}
+\end{center}
+
+\end{document}
+

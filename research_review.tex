@@ -1,0 +1,23 @@
+\documentclass[11pt]{article}
+\title{\LARGE \bf Research review}
+\usepackage{listings} 
+\author{Stanislav Levental}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+
+Making a summary of localization problem solving and path planning, which are very common problems in robotics.
+\end{abstract}
+
+\section{Kalman filters}
+
+Kalman filters usually used as a general approach when some uncertainty exists, for example when search state is not fully observable or observation result is not fully reliable. In this case we are working with probability distributions over states rather then binary states. Interaction with the environment also may be non deterministic which produces another probability distribution which we need to mix with observation one. This give us a very robust framework which is commonly used in a real-life applications for self-driving cars, robots, etc. When we need to build a model of uncertain sensors and uncertain action results is required. The main trick in the Kalman filters algorithm is combining prior belief which is represented as a Gaussian distribution with a sensor measurement - which gives another distribution - posterior probability of a state. 
+
+\section{Path planning using reinforcement learning}
+
+Once problem with localization and navigation is solved, for example using Kalman filters, there is another problem from the same domain of autonomous vehicles - path planning. Some algorithms like $A^{*}$ is commonly used, but they are working great when environment is not changing and when there is no collaboration between agents is happening. Sometimes, it's possible to create a model of such environment and let agents interact with this environment with a goal of gaining reward, for robot it may be reward for each meter driven without turning, this will required robot to choose longer possible trajectories. Having multiple experiments run in this simulation gives policy function - the function from current state and action, which could be used to estimate a reward which this action may produce. From my opinion this two algorithms are very important and could be used in a lot of different tasks related to real world interaction, when there is no determinism and certainty. 
+
+\end{document}
+
